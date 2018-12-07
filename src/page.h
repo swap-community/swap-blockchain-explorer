@@ -15,6 +15,7 @@
 
 #include "MicroCore.h"
 #include "tools.h"
+#include "crypto/hash.h"
 #include "rpccalls.h"
 
 #include "CurrentBlockchainStatus.h"
@@ -359,6 +360,8 @@ Blockchain* core_storage;
 rpccalls rpc;
 
 atomic<time_t> server_timestamp;
+
+cn_pow_hash_v3 pow;
 
 
 cryptonote::network_type nettype;
@@ -1254,7 +1257,7 @@ show_block(uint64_t _blk_height)
 
     // initalise page tempate map with basic info about blockchain
 
-    string blk_pow_hash_str = pod_to_hex(get_block_longhash(blk, _blk_height));
+    string blk_pow_hash_str = pod_to_hex(get_block_longhash(blk, pow));
     uint64_t blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
 
     mstch::map context {
@@ -1720,7 +1723,7 @@ show_ringmembers_hex(string const& tx_hash_str)
                     == false)
                 continue;
 
-            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount, 1),
+            core_storage->get_db().get_output_key(in_key.amount,
                                                   absolute_offsets,
                                                   mixin_outputs);
         }
@@ -2009,7 +2012,7 @@ show_ringmemberstx_jsonhex(string const& tx_hash_str)
 
             // get mining ouput info
             core_storage->get_db().get_output_key(
-                        epee::span<const uint64_t>(&in_key.amount, 1),
+                        in_key.amount,
                         absolute_offsets,
                         mixin_outputs);
         }
@@ -2110,7 +2113,7 @@ show_my_outputs(string tx_hash_str,
 
     if (xmr_address_str.empty())
     {
-        return string("Monero address not provided!");
+        return string("Swap address not provided!");
     }
 
     if (viewkey_str.empty())
@@ -2524,7 +2527,7 @@ show_my_outputs(string tx_hash_str,
             if (are_absolute_offsets_good(absolute_offsets, in_key) == false)
                 continue;
 
-            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount, 1),
+            core_storage->get_db().get_output_key(in_key.amount,
                                                   absolute_offsets,
                                                   mixin_outputs);
         }
@@ -4687,7 +4690,7 @@ json_transaction(string tx_hash_str)
             if (are_absolute_offsets_good(absolute_offsets, in_key) == false)
                 continue;
 
-            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount, 1),
+            core_storage->get_db().get_output_key(in_key.amount,
                                                   absolute_offsets,
                                                   outputs);
         }
@@ -5442,7 +5445,7 @@ json_outputs(string tx_hash_str,
     if (address_str.empty())
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Monero address not provided";
+        j_response["message"] = "Swap address not provided";
         return j_response;
     }
 
@@ -5479,7 +5482,7 @@ json_outputs(string tx_hash_str,
     if (!xmreg::parse_str_address(address_str,  address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse monero address: " + address_str;
+        j_response["message"] = "Cant parse swap address: " + address_str;
         return j_response;
 
     }
@@ -5667,7 +5670,7 @@ json_outputsblocks(string _limit,
     if (address_str.empty())
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Monero address not provided";
+        j_response["message"] = "Swap address not provided";
         return j_response;
     }
 
@@ -5684,7 +5687,7 @@ json_outputsblocks(string _limit,
     if (!xmreg::parse_str_address(address_str, address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse monero address: " + address_str;
+        j_response["message"] = "Cant parse swap address: " + address_str;
         return j_response;
 
     }
@@ -5833,7 +5836,7 @@ json_networkinfo()
     if (!get_monero_network_info(j_info))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant get monero network info";
+        j_response["message"] = "Cant get swap network info";
         return j_response;
     }
 
@@ -6363,7 +6366,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
 
             // offsets seems good, so try to get the outputs for the amount and
             // offsets given
-            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount, 1),
+            core_storage->get_db().get_output_key(in_key.amount,
                                                   absolute_offsets,
                                                   outputs);
         }

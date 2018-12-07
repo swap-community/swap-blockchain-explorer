@@ -285,8 +285,9 @@ main(int ac, const char* av[])
 
     // get domian url based on the request
     auto get_domain = [&use_ssl](crow::request const& req) {
-        return (use_ssl ? "https://" : "http://")
-               + req.get_header_value("Host");
+        return "";
+        //return (use_ssl ? "https://" : "http://")
+        //       + req.get_header_value("Host");
     };
 
     CROW_ROUTE(app, "/")
