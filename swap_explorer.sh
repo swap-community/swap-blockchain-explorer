@@ -1,1 +1,1 @@
-./swapblocks --testnet-url https://swaptest.coinscope.cc -d http://127.0.0.1:19950 -p 8085 -b ~/.swap/lmdb --enable-emission-monitor --enable-autorefresh-option --enable-block-cache --enable-tx-cache --enable-json-api --enable-pusher
+./swapblocks -x 127.0.0.1 --testnet-url https://swaptest.coinscope.cc -d http://127.0.0.1:19950 -p 8085 -b ~/.swap/lmdb --enable-emission-monitor --enable-autorefresh-option --enable-block-cache --enable-tx-cache --enable-json-api --enable-pusher
