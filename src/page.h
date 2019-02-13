@@ -1258,6 +1258,10 @@ show_block(uint64_t _blk_height)
     // initalise page tempate map with basic info about blockchain
 
     string blk_pow_hash_str = pod_to_hex(get_block_longhash(blk, pow));
+
+    string blk_cycle_str = pod_to_hex(blk.cycle);
+    for (int i = 0; i < 31; i++) blk_cycle_str.insert((31-i)*8, (i%16!=15)?" ":"\n");
+
     uint64_t blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
 
     mstch::map context {
@@ -1278,6 +1282,7 @@ show_block(uint64_t _blk_height)
             {"blk_age"              , age.first},
             {"delta_time"           , delta_time},
             {"blk_nonce"            , blk.nonce},
+            {"blk_cycle"            , blk_cycle_str},
             {"blk_pow_hash"         , blk_pow_hash_str},
             {"blk_difficulty"       , blk_difficulty},
             {"age_format"           , age.second},
