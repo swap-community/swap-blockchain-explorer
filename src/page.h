@@ -897,12 +897,22 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     // perapre network info mstch::map for the front page
     string hash_rate;
 
-    if (current_network_info.hash_rate > 1e6)
-        hash_rate = fmt::format("{:0.3f} MH/s", current_network_info.hash_rate/1.0e6);
-    else if (current_network_info.hash_rate > 1e3)
-        hash_rate = fmt::format("{:0.3f} kH/s", current_network_info.hash_rate/1.0e3);
-    else
-        hash_rate = fmt::format("{:d} H/s", current_network_info.hash_rate);
+    if(current_network_info.current_hf_version >= HF_VERSION_CUCKOO) {
+      if ((current_network_info.difficulty*32/15) > 1e6)
+          hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*32/15/1.0e6);
+      else if ((current_network_info.difficulty*32/15) > 1e3)
+          hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*32/15/1.0e3);
+      else
+          hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*32/15);
+    }
+    else{
+      if (current_network_info.hash_rate > 1e6)
+          hash_rate = fmt::format("{:0.3f} MH/s", current_network_info.hash_rate/1.0e6);
+      else if (current_network_info.hash_rate > 1e3)
+          hash_rate = fmt::format("{:0.3f} kH/s", current_network_info.hash_rate/1.0e3);
+      else
+          hash_rate = fmt::format("{:d} H/s", current_network_info.hash_rate);
+    }
 
     pair<string, string> network_info_age = get_age(local_copy_server_timestamp,
                                                     current_network_info.info_timestamp);
