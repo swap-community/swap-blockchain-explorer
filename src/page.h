@@ -1282,6 +1282,7 @@ show_block(uint64_t _blk_height)
             {"blk_age"              , age.first},
             {"delta_time"           , delta_time},
             {"blk_nonce"            , blk.nonce},
+            {"is_cuckcoo"           , (blk.major_version >= HF_VERSION_CUCKOO)},
             {"blk_cycle"            , blk_cycle_str},
             {"blk_pow_hash"         , blk_pow_hash_str},
             {"blk_difficulty"       , blk_difficulty},

@@ -33,11 +33,18 @@
         <tr>
             <td>PoW hash:</td><td>{{blk_pow_hash}}</td>
             <td>Difficulty:</td><td>{{blk_difficulty}}</td>
-            <td></td>
+            {{^is_cuckcoo}}
+            <td>Pow type:</td><td>cryptonight</td>
+            {{/is_cuckcoo}}
+            {{#is_cuckcoo}}
+            <td>Pow type:</td><td>cuckaroo29</td>
+            {{/is_cuckcoo}}
         </tr>
+		{{#is_cuckcoo}}
         <tr>
-            <td>Cycle:</td><td colspan="4"><pre>{{blk_cycle}}</pre></td>
+            <td>Cycle:</td><td colspan="5"><pre>{{blk_cycle}}</pre></td>
         </tr>
+		{{/is_cuckcoo}}
     </table>
 
     <h3>Miner reward transaction</h3>
