@@ -1292,6 +1292,7 @@ show_block(uint64_t _blk_height)
             {"blk_age"              , age.first},
             {"delta_time"           , delta_time},
             {"blk_nonce"            , blk.nonce},
+            {"blk_nonce8"            , blk.nonce8},
             {"is_cuckcoo"           , (blk.major_version >= HF_VERSION_CUCKOO)},
             {"blk_cycle"            , blk_cycle_str},
             {"blk_pow_hash"         , blk_pow_hash_str},
@@ -1739,7 +1740,7 @@ show_ringmembers_hex(string const& tx_hash_str)
                     == false)
                 continue;
 
-            core_storage->get_db().get_output_key(in_key.amount,
+            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount,1),
                                                   absolute_offsets,
                                                   mixin_outputs);
         }
@@ -2028,7 +2029,7 @@ show_ringmemberstx_jsonhex(string const& tx_hash_str)
 
             // get mining ouput info
             core_storage->get_db().get_output_key(
-                        in_key.amount,
+                        epee::span<const uint64_t>(&in_key.amount,1),
                         absolute_offsets,
                         mixin_outputs);
         }
@@ -2543,7 +2544,7 @@ show_my_outputs(string tx_hash_str,
             if (are_absolute_offsets_good(absolute_offsets, in_key) == false)
                 continue;
 
-            core_storage->get_db().get_output_key(in_key.amount,
+            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount,1),
                                                   absolute_offsets,
                                                   mixin_outputs);
         }
@@ -4706,7 +4707,7 @@ json_transaction(string tx_hash_str)
             if (are_absolute_offsets_good(absolute_offsets, in_key) == false)
                 continue;
 
-            core_storage->get_db().get_output_key(in_key.amount,
+            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount,1),
                                                   absolute_offsets,
                                                   outputs);
         }
@@ -6382,7 +6383,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
 
             // offsets seems good, so try to get the outputs for the amount and
             // offsets given
-            core_storage->get_db().get_output_key(in_key.amount,
+            core_storage->get_db().get_output_key(epee::span<const uint64_t>(&in_key.amount,1),
                                                   absolute_offsets,
                                                   outputs);
         }
@@ -6585,7 +6586,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
     context.emplace("inputs", inputs);
 
     // get indices of outputs in amounts tables
-    vector<uint64_t> out_amount_indices;
+    std::vector<uint64_t> out_amount_indices;
 
     try
     {
@@ -6595,7 +6596,7 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
         if (core_storage->get_db().tx_exists(txd.hash, tx_index))
         {
             out_amount_indices = core_storage->get_db()
-                    .get_tx_amount_output_indices(tx_index);
+                    .get_tx_amount_output_indices(tx_index,1).front();
         }
         else
         {
