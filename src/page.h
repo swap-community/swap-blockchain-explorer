@@ -5929,7 +5929,7 @@ txt_emission()
     // get basic network info
     if (!CurrentBlockchainStatus::is_thread_running())
     {
-		return "";
+        return "";
     }
     else
     {
