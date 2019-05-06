@@ -5923,6 +5923,21 @@ json_emission()
     return j_response;
 }
 
+string
+txt_emission()
+{
+    // get basic network info
+    if (!CurrentBlockchainStatus::is_thread_running())
+    {
+		return "";
+    }
+    else
+    {
+        CurrentBlockchainStatus::Emission current_values = CurrentBlockchainStatus::get_emission();
+        return std::to_string(current_values.coinbase);
+    }
+}
+
 
 /*
       * Lets use this json api convention for success and error

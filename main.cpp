@@ -763,6 +763,11 @@ main(int ac, const char* av[])
             return r;
         });
 
+        CROW_ROUTE(app, "/api/emission_txt")
+        ([&]() {
+            return myxmr::htmlresponse(xmrblocks.txt_emission());
+        });
+
         CROW_ROUTE(app, "/api/outputs").methods("GET"_method)
         ([&](const crow::request &req) {
 
