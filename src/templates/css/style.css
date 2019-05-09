@@ -1,11 +1,19 @@
 body {
     margin: 20px;
     padding: 0;
-    color: black;
-    background-color: white;
+    color: #a3acde;
+    background-color:#151933;
     font-family: Sans-Serif;
 	font-weight: 100;
 }
+
+textarea {
+    color: #fff;
+    background-color:#151933;
+    border: 2px solid #a3acde;
+    border-radius: 0.25rem;
+}
+
 
 h1, h2, h3, h4, h5, h6 {
     text-align: center;
@@ -34,22 +42,25 @@ td {
 
 a:link {
     text-decoration: none;
-    color: blue;
+    color: #a3acde;
+    font-weight: 800;
 }
 
 a:visited {
     text-decoration: none;
-    color: blue;
-}
-
-a:hover {
-    text-decoration: underline;
-    color: blue;
+    color: #a3acde;
+    font-weight: 800;
 }
 
 a:active {
     text-decoration: none;
-    color: blue;
+    color: #a3acde;
+    font-weight: 800;
+}
+
+a:hover {
+    color: #fff;
+    text-decoration: none;
 }
 
 form {
@@ -59,15 +70,73 @@ form {
 
 .style-1 input[type="text"] {
     padding: 2px;
-    border: solid 1px #dcdcdc;
-    transition: box-shadow 0.3s, border 0.3s;
-}
-.style-1 input[type="text"]:focus,
-.style-1 input[type="text"].focus {
-    border: solid 1px #707070;
-    box-shadow: 0 0 5px 1px #969696;
+    background-color:#151933;
+    border:2px solid #a3acde;
+    border-radius: 0.25rem;
+    color:white;
 }
 
+.style-1 input[type="text"]:focus,
+.style-1 input[type="text"].focus {
+    border:2px solid #a3acde;
+    border-radius: 0.25rem;
+    color:white;
+}
+
+.search input[type="text"] {
+    padding: 0.55rem .5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-color:#151933;
+    border:2px solid #a3acde;
+    border-radius: 0.25rem;
+    color:white;
+    vertical-align: middle;
+    width: 43rem;
+}
+
+.search input[type="text"]:focus,
+.search input[type="text"].focus {
+    border:2px solid #a3acde;
+    border-radius: 0.25rem;
+    color:white;
+}
+
+.style-1 input[type="submit"] {
+    display: inline;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 0.55rem 1.8rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    border: 2px solid #6d70ff;
+    border-radius: 0.25rem;
+    z-index: 2;
+    background-color: transparent;
+    background-image: none;
+    color: #a3acde;
+    margin: .5rem;
+}
+
+.style-1 input[type="submit"]:hover,
+.style-1 input[type="submit"].focus {
+    color: #fff;
+    background-color: #6d70ff;
+    border-color: #6d70ff;
+    cursor: pointer;
+}
 
 .tabs {
     position: relative;
@@ -81,12 +150,37 @@ form {
 }
 
 .tab label {
-    background: white;
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin-left: -1px;
-    position: relative;
-    left: 1px;
+    display: inline;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 0.55rem 1.8rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    border: 2px solid #a3acde;
+    border-radius: 0.25rem;
+    z-index: 2;
+    background-color: transparent;
+    background-image: none;
+    color: #a3acde;
+    margin: 0 .5rem 0 0;
+}
+
+.tab label:hover {
+    color: #fff;
+    background-color: #a3acde;
+    border-color: #a3acde;
 }
 
 .tab [type=radio] {
@@ -95,19 +189,48 @@ form {
 
 .content {
     position: absolute;
-    top: 28px;
+    top: 40px;
     left: 0;
-    background: white;
+    background: #151933;
     right: 0;
-    bottom: 0;
+    bottom: -20px;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 2px solid #a3acde;
+    border-radius: 0.25rem;
 }
 
 [type=radio]:checked ~ label {
-    background: #505050 ;
-    border-bottom: 1px solid black;
+    display: inline;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 0.55rem 1.8rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+    border: 2px solid #a3acde;
+    border-radius: 0.25rem;
     z-index: 2;
+    background-color: #a3acde;
+    background-image: none;
+    color: #fff;
+    margin: 0 .5rem 0 0;
+}
+
+[type=radio]:checked ~ label:hover {
+    color: #fff;
+    background-color: #a3acde;
+    border-color: #a3acde;
 }
 
 [type=radio]:checked ~ label ~ .content {
@@ -126,10 +249,15 @@ label#show-decoded-inputs {
     display: inline-block;
     /*margin: 60px 0 10px 0;*/
     cursor: pointer;
-    background-color: white;
-    color: black;
+    background-color: transparent;
+    color: #a3acde;
     width: 100%;
     text-align: center;
+    font-weight: 600;
+}
+
+label#show-decoded-inputs:hover {
+    color:#fff;
 }
 
 div#decoded-inputs{
