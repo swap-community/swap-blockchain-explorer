@@ -1312,7 +1312,7 @@ show_block(uint64_t _blk_height)
     string blk_cycle_str = pod_to_hex(blk.cycle);
     for (int i = 0; i < 31; i++) blk_cycle_str.insert((31-i)*8, (i%16!=15)?" ":"\n");
 
-    uint64_t blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
+    cryptonote::difficulty_type blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
 
     mstch::map context {
             {"testnet"              , testnet},
