@@ -36,7 +36,7 @@
 #include <limits>
 #include <ctime>
 #include <future>
-
+#include <type_traits>
 
 
 #define TMPL_DIR                    "./templates"
@@ -103,6 +103,43 @@ struct tx_info_cache
         }
     };
 };
+
+
+// helper to ignore any number of template parametrs
+template<typename...> using VoidT = void;
+
+// primary template;
+template<typename, typename = VoidT<>>
+struct HasSpanInGetOutputKeyT: std::false_type
+{};
+
+//partial specialization (myy be SFINAEed away)
+template <typename T>
+struct HasSpanInGetOutputKeyT<
+    T, 
+    VoidT<decltype(std::declval<T>()
+            .get_output_key(
+                std::declval<const epee::span<const uint64_t>&>(),
+                std::declval<const std::vector<uint64_t>&>(),
+                std::declval<std::vector<cryptonote::output_data_t>&>()))
+    >>: std::true_type
+{};
+
+
+// primary template;
+template<typename, typename = VoidT<>>
+struct OutputIndicesReturnVectOfVectT : std::false_type 
+{};
+
+template<typename T>
+struct OutputIndicesReturnVectOfVectT<
+    T,
+    VoidT<decltype(std::declval<T>()
+            .get_tx_amount_output_indices(
+                uint64_t{}, size_t{})
+            .front().front())
+    >>: std::true_type 
+{};
 
 // indect overload of hash for tx_info_cache::key
 namespace std
@@ -468,7 +505,6 @@ page(MicroCore* _mcore,
     mainnet = nettype == cryptonote::network_type::MAINNET;
     testnet = nettype == cryptonote::network_type::TESTNET;
     stagenet = nettype == cryptonote::network_type::STAGENET;
-
 
     no_of_mempool_tx_of_frontpage = 25;
 
@@ -896,6 +932,10 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
 
     // perapre network info mstch::map for the front page
     string hash_rate;
+    double hr_d;
+    char metric_prefix;
+    cryptonote::difficulty_type hr = make_difficulty(current_network_info.hash_rate, current_network_info.hash_rate_top64);
+    get_metric_prefix(hr, hr_d, metric_prefix);
 
     if(current_network_info.current_hf_version >= HF_VERSION_CUCKOO) {
       if ((current_network_info.difficulty*32/15) > 1e6)
@@ -925,7 +965,7 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     }
 
     context["network_info"] = mstch::map {
-            {"difficulty"        , current_network_info.difficulty},
+            {"difficulty"        , make_difficulty(current_network_info.difficulty, current_network_info.difficulty_top64).str()},
             {"hash_rate"         , hash_rate},
             {"fee_per_kb"        , print_money(current_network_info.fee_per_kb)},
             {"alt_blocks_no"     , current_network_info.alt_blocks_count},
@@ -1296,7 +1336,7 @@ show_block(uint64_t _blk_height)
             {"is_cuckcoo"           , (blk.major_version >= HF_VERSION_CUCKOO)},
             {"blk_cycle"            , blk_cycle_str},
             {"blk_pow_hash"         , blk_pow_hash_str},
-            {"blk_difficulty"       , blk_difficulty},
+            {"blk_difficulty"       , blk_difficulty.str()},
             {"age_format"           , age.second},
             {"major_ver"            , std::to_string(blk.major_version)},
             {"minor_ver"            , std::to_string(blk.minor_version)},
@@ -1740,9 +1780,12 @@ show_ringmembers_hex(string const& tx_hash_str)
                     == false)
                 continue;
 
-            core_storage->get_db().get_output_key(in_key.amount,
-                                                  absolute_offsets,
-                                                  mixin_outputs);
+            //core_storage->get_db().get_output_key(in_key.amount,
+            //                                      absolute_offsets,
+            //                                      mixin_outputs);
+            get_output_key<BlockchainDB>(in_key.amount,
+                                         absolute_offsets,
+                                         mixin_outputs);
         }
         catch (OUTPUT_DNE const& e)
         {
@@ -2028,10 +2071,14 @@ show_ringmemberstx_jsonhex(string const& tx_hash_str)
                         in_key.amount, absolute_offsets, indices);
 
             // get mining ouput info
-            core_storage->get_db().get_output_key(
-                        in_key.amount,
-                        absolute_offsets,
-                        mixin_outputs);
+            //core_storage->get_db().get_output_key(
+                        //in_key.amount,
+                        //absolute_offsets,
+                        //mixin_outputs);
+
+            get_output_key<BlockchainDB>(in_key.amount,
+                                           absolute_offsets,
+                                           mixin_outputs);
         }
         catch (exception const& e)
         {
@@ -2308,8 +2355,8 @@ show_my_outputs(string tx_hash_str,
     string pid_str   = pod_to_hex(txd.payment_id);
     string pid8_str  = pod_to_hex(txd.payment_id8);
 
-    string shortcut_url = domain
-                          + (tx_prove ? "/prove" : "/myoutputs")
+    string shortcut_url = tx_prove 
+                    ? string("/prove") : string("/myoutputs")
                           + '/' + tx_hash_str
                           + '/' + xmr_address_str
                           + '/' + viewkey_str;
@@ -2343,6 +2390,7 @@ show_my_outputs(string tx_hash_str,
             {"payment_id8"          , pid8_str},
             {"decrypted_payment_id8", string{}},
             {"tx_prove"             , tx_prove},
+            {"domain_url"           , domain},
             {"shortcut_url"         , shortcut_url}
     };
 
@@ -2544,9 +2592,13 @@ show_my_outputs(string tx_hash_str,
             if (are_absolute_offsets_good(absolute_offsets, in_key) == false)
                 continue;
 
-            core_storage->get_db().get_output_key(in_key.amount,
-                                                  absolute_offsets,
-                                                  mixin_outputs);
+            //core_storage->get_db().get_output_key(in_key.amount,
+                                                  //absolute_offsets,
+                                                  //mixin_outputs);
+            
+            get_output_key<BlockchainDB>(in_key.amount,
+                                           absolute_offsets,
+                                           mixin_outputs);
         }
         catch (const OUTPUT_DNE& e)
         {
@@ -4707,9 +4759,13 @@ json_transaction(string tx_hash_str)
             if (are_absolute_offsets_good(absolute_offsets, in_key) == false)
                 continue;
 
-            core_storage->get_db().get_output_key(in_key.amount,
-                                                  absolute_offsets,
-                                                  outputs);
+            //core_storage->get_db().get_output_key(in_key.amount,
+                                                  //absolute_offsets,
+                                                  //outputs);
+
+            get_output_key<BlockchainDB>(in_key.amount,
+                                           absolute_offsets,
+                                           outputs);
         }
         catch (const OUTPUT_DNE &e)
         {
@@ -6398,9 +6454,13 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
 
             // offsets seems good, so try to get the outputs for the amount and
             // offsets given
-            core_storage->get_db().get_output_key(in_key.amount,
-                                                  absolute_offsets,
-                                                  outputs);
+            //core_storage->get_db().get_output_key(in_key.amount,
+                                                  //absolute_offsets,
+                                                  //outputs);
+            
+            get_output_key<BlockchainDB>(in_key.amount,
+                                           absolute_offsets,
+                                           outputs);
         }
         catch (const std::exception& e)
         {
@@ -6610,8 +6670,11 @@ construct_tx_context(transaction tx, uint16_t with_ring_signatures = 0)
 
         if (core_storage->get_db().tx_exists(txd.hash, tx_index))
         {
-            out_amount_indices = core_storage->get_db()
-                    .get_tx_amount_output_indices(tx_index);
+            //out_amount_indices = core_storage->get_db()
+                    //.get_tx_amount_output_indices(tx_index).front();
+            get_tx_amount_output_indices<BlockchainDB>(
+                   out_amount_indices, 
+                   tx_index);
         }
         else
         {
@@ -6963,7 +7026,7 @@ get_monero_network_info(json& j_info)
        {"current"                   , local_copy_network_info.current},
        {"height"                    , local_copy_network_info.height},
        {"target_height"             , local_copy_network_info.target_height},
-       {"difficulty"                , local_copy_network_info.difficulty},
+       {"difficulty"                , make_difficulty(local_copy_network_info.difficulty, local_copy_network_info.difficulty_top64).str()},
        {"target"                    , local_copy_network_info.target},
        {"hash_rate"                 , local_copy_network_info.hash_rate},
        {"tx_count"                  , local_copy_network_info.tx_count},
@@ -6976,7 +7039,7 @@ get_monero_network_info(json& j_info)
        {"testnet"                   , local_copy_network_info.nettype == cryptonote::network_type::TESTNET},
        {"stagenet"                  , local_copy_network_info.nettype == cryptonote::network_type::STAGENET},
        {"top_block_hash"            , pod_to_hex(local_copy_network_info.top_block_hash)},
-       {"cumulative_difficulty"     , local_copy_network_info.cumulative_difficulty},
+       {"cumulative_difficulty"     , make_difficulty(local_copy_network_info.cumulative_difficulty, local_copy_network_info.cumulative_difficulty_top64).str()},
        {"block_size_limit"          , local_copy_network_info.block_size_limit},
        {"block_size_median"         , local_copy_network_info.block_size_median},
        {"start_time"                , local_copy_network_info.start_time},
@@ -7115,9 +7178,45 @@ add_js_files(mstch::map& context)
     }};
 }
 
-};
+template <typename T, typename... Args>
+typename std::enable_if<
+    HasSpanInGetOutputKeyT<T>::value, void>::type
+get_output_key(uint64_t amount, Args&&... args)
+{
+  core_storage->get_db().get_output_key(
+          epee::span<const uint64_t>(&amount, 1), 
+          std::forward<Args>(args)...);
 }
 
+template <typename T, typename... Args>
+typename std::enable_if<
+    !HasSpanInGetOutputKeyT<T>::value, void>::type
+get_output_key(uint64_t amount, Args&&... args)
+{
+  core_storage->get_db().get_output_key(
+          amount, std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+typename std::enable_if<
+    !OutputIndicesReturnVectOfVectT<T>::value, void>::type
+get_tx_amount_output_indices(vector<uint64_t>& out_amount_indices, Args&&... args)
+{
+    out_amount_indices = core_storage->get_db()
+       .get_tx_amount_output_indices(std::forward<Args>(args)...);
+}
+
+template <typename T, typename... Args>
+typename std::enable_if<
+    OutputIndicesReturnVectOfVectT<T>::value, void>::type
+get_tx_amount_output_indices(vector<uint64_t>& out_amount_indices, Args&&... args)
+{
+    out_amount_indices = core_storage->get_db()
+       .get_tx_amount_output_indices(std::forward<Args>(args)...).front();
+}
+
+};
+}
 
 #endif //CROWXMR_PAGE_H
 
