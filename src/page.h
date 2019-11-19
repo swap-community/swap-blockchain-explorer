@@ -762,19 +762,12 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     // perapre network info mstch::map for the front page
     string hash_rate;
 
-    double hr_d;
-    char metric_prefix;
-
-    cryptonote::difficulty_type hr = make_difficulty(
-            current_network_info.hash_rate, 
-            current_network_info.hash_rate_top64);
-
-    get_metric_prefix(hr, hr_d, metric_prefix);
-
-    if (metric_prefix != 0)
-        hash_rate = fmt::format("{:0.3f} {:c}H/s", hr_d, metric_prefix);
+    if ((current_network_info.difficulty*32/15) > 1e6)
+        hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*32/15/1.0e6);
+    else if ((current_network_info.difficulty*32/15) > 1e3)
+        hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*32/15/1.0e3);
     else
-        hash_rate = fmt::format("{:s} H/s", hr.str());
+        hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*32/15);
 
     pair<string, string> network_info_age = get_age(local_copy_server_timestamp,
                                                     current_network_info.info_timestamp);
@@ -1121,8 +1114,13 @@ show_block(uint64_t _blk_height)
 
     // initalise page tempate map with basic info about blockchain
 
-    string blk_pow_hash_str = pod_to_hex(get_block_longhash(core_storage, blk, _blk_height, 0));
+    cn_pow_hash_v3 ctx;
+    string blk_pow_hash_str = pod_to_hex(get_block_longhash(core_storage, blk, _blk_height, 0, ctx));
     cryptonote::difficulty_type blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
+
+    string blk_cycle_str = pod_to_hex(blk.cycle);
+    for (int i = 0; i < 31; i++) blk_cycle_str.insert((31-i)*8, (i%16!=15)?" ":"\n");
+
 
     mstch::map context {
             {"testnet"              , testnet},
@@ -1133,6 +1131,8 @@ show_block(uint64_t _blk_height)
             {"blk_timestamp_epoch"  , blk.timestamp},
             {"prev_hash"            , prev_hash_str},
             {"next_hash"            , next_hash_str},
+            {"is_cuckcoo"           , (blk.major_version >= HF_VERSION_CUCKOO)},
+            {"blk_cycle"            , blk_cycle_str},
             {"enable_as_hex"        , enable_as_hex},
             {"have_next_hash"       , have_next_hash},
             {"have_prev_hash"       , have_prev_hash},
@@ -1142,6 +1142,7 @@ show_block(uint64_t _blk_height)
             {"blk_age"              , age.first},
             {"delta_time"           , delta_time},
             {"blk_nonce"            , blk.nonce},
+            {"blk_nonce8"           , blk.nonce8},
             {"blk_pow_hash"         , blk_pow_hash_str},
             {"is_randomx"           , (blk.major_version >= 12
                                             && enable_randomx == true)},
@@ -1907,7 +1908,7 @@ show_my_outputs(string tx_hash_str,
 
     if (xmr_address_str.empty())
     {
-        return string("Monero address not provided!");
+        return string("Swap address not provided!");
     }
 
     if (viewkey_str.empty())
@@ -5239,7 +5240,7 @@ json_outputs(string tx_hash_str,
     if (address_str.empty())
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Monero address not provided";
+        j_response["message"] = "Swap address not provided";
         return j_response;
     }
 
@@ -5276,7 +5277,7 @@ json_outputs(string tx_hash_str,
     if (!xmreg::parse_str_address(address_str,  address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse monero address: " + address_str;
+        j_response["message"] = "Cant parse Swap address: " + address_str;
         return j_response;
 
     }
@@ -5464,7 +5465,7 @@ json_outputsblocks(string _limit,
     if (address_str.empty())
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Monero address not provided";
+        j_response["message"] = "Swap address not provided";
         return j_response;
     }
 
@@ -5481,7 +5482,7 @@ json_outputsblocks(string _limit,
     if (!xmreg::parse_str_address(address_str, address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse monero address: " + address_str;
+        j_response["message"] = "Cant parse Swap address: " + address_str;
         return j_response;
 
     }
@@ -5630,7 +5631,7 @@ json_networkinfo()
     if (!get_monero_network_info(j_info))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant get monero network info";
+        j_response["message"] = "Cant get Swap network info";
         return j_response;
     }
 
