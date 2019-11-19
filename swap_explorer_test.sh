@@ -1,0 +1,1 @@
+./swapblocks -x 127.0.0.1 -t --mainnet-url https://explorer.xwp.one -d http://127.0.0.1:29950 -p 8086 -b ~/.swap/testnet/lmdb --enable-emission-monitor --enable-autorefresh-option --enable-json-api --enable-pusher
