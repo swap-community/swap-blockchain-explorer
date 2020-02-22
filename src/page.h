@@ -46,6 +46,7 @@ extern  __thread randomx_vm *rx_vm;
 
 #include <algorithm>
 #include <limits>
+#include <cmath>
 #include <ctime>
 #include <future>
 #include <type_traits>
@@ -5712,7 +5713,7 @@ txt_emission()
     else
     {
         CurrentBlockchainStatus::Emission current_values = CurrentBlockchainStatus::get_emission();
-        return std::to_string(current_values.coinbase);
+        return std::to_string(current_values.coinbase / pow(10,12));
     }
 }
 
