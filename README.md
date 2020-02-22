@@ -1,8 +1,6 @@
-Welcome to the swap-blockchain-explorer wiki!
-
 ## Swap Block Explorers (version 3):
 1. https://explorer.xwp.one
-2. http://94.23.159.182:8081/
+2. https://explorer.test.xwp.one/
 
 ## **Compiling swap daemon on Ubuntu 18.04**
 
