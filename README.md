@@ -25,7 +25,7 @@ Run and sync the Daemon with ``./swapd``
 ## Compile and run the swapblocks
 
     cd ~
-    git clone https://github.com/swap-dev/swap-blockchain-explorer swapblock
+    git clone https://github.com/swap-community/swap-blockchain-explorer swapblock
     cd swapblock
     mkdir build && cd build
     cmake ..
