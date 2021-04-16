@@ -13,9 +13,14 @@ h1, h2 {
     color: #f8f8f8;
 }
 
-h3, h4, h5, h6 {
+h3, h4 {
     text-align: center;
     color: #e2e2e2;
+}
+
+h5, h6 {
+    text-align: center;
+    color: #999;
 }
 
 .center {
