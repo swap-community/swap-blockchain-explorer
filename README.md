@@ -1,6 +1,6 @@
 ## Swap Block Explorers (version 3):
-1. https://explorer.xwp.one
-2. https://explorer.test.xwp.one/
+1. https://explorer.swap-community.com/
+2. https://explorer.text.swap-community.com/
 
 ## **Compiling swap daemon on Ubuntu 18.04**
 
